@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SoulBreath</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom Font setup */
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+
+      body {
+        font-family: 'Noto Sans SC', sans-serif;
+        overflow: hidden; /* Prevent scrolling */
+        background-color: #000;
+      }
+      
+      .serif {
+        font-family: 'Noto Serif SC', serif;
+      }
+
+      /* Box Breathing Animation Keyframes */
+      @keyframes moveDot {
+        0% { top: 0; left: 0; }
+        25% { top: 0; left: 100%; }
+        50% { top: 100%; left: 100%; }
+        75% { top: 100%; left: 0; }
+        100% { top: 0; left: 0; }
+      }
+
+      .animate-box-breath {
+        animation: moveDot 16s linear infinite;
+      }
+
+      /* Connection Loading Animation */
+      @keyframes glowBreath {
+        0%, 100% { transform: scale(0.95); opacity: 0.85; box-shadow: 0 0 20px rgba(251, 146, 60, 0.3); }
+        50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 45px rgba(251, 146, 60, 0.7); }
+      }
+
+      .animate-glow-breath {
+        animation: glowBreath 2.5s ease-in-out infinite;
+      }
+
+      /* Fade transitions */
+      .fade-enter {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      .fade-enter-active {
+        opacity: 1;
+        transform: scale(1);
+        transition: opacity 300ms, transform 300ms;
+      }
+      .fade-exit {
+        opacity: 1;
+        transform: scale(1);
+      }
+      .fade-exit-active {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 300ms, transform 300ms;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "lucide-react": "https://esm.sh/lucide-react@^0.564.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
