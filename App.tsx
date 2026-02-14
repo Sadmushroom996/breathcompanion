@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { AppSettings, BreathingPhase } from './types';
-import { DEFAULT_SETTINGS, MUSIC_PLAYLIST } from './constants';
-import { MusicIcon, PlusIcon, CloseIcon, StopIcon, EditIcon } from './components/Icons';
+import { DEFAULT_SETTINGS } from './constants';
+import { PlusIcon, CloseIcon, StopIcon, EditIcon } from './components/Icons';
 
 // --- Sub-components defined internally for simplicity given the scope ---
 
@@ -102,56 +103,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
   );
 };
 
-// 2. Music Selection Modal
-interface MusicModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  currentUrl: string;
-  onSelect: (url: string) => void;
-}
-
-const MusicModal: React.FC<MusicModalProps> = ({ isOpen, onClose, currentUrl, onSelect }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm sm:p-6 animate-fade-in">
-      <div className="w-full sm:max-w-sm bg-[#1A1A1A] rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border-t sm:border border-white/10 text-white relative max-h-[80vh] overflow-y-auto">
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
-        >
-          <CloseIcon className="w-6 h-6" />
-        </button>
-
-        <h2 className="text-xl font-medium text-center mb-6 mt-2 text-white/90">选择背景音</h2>
-
-        <div className="space-y-2">
-          {MUSIC_PLAYLIST.map((track) => (
-            <button
-              key={track.name}
-              onClick={() => {
-                onSelect(track.url);
-                onClose();
-              }}
-              className={`w-full flex items-center justify-between p-4 rounded-xl transition-all ${
-                (track.url === currentUrl || (track.url === '' && currentUrl === '')) 
-                  ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
-                  : 'bg-[#2A2A2A] text-gray-300 hover:bg-[#333] border border-transparent'
-              }`}
-            >
-              <span className="font-medium">{track.name}</span>
-              {(track.url === currentUrl || (track.url === '' && currentUrl === '')) && (
-                <div className="w-2 h-2 rounded-full bg-orange-400 shadow-[0_0_8px_rgba(251,146,60,0.6)]"></div>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// 3. Breathing View
+// 2. Breathing View
 interface BreathingScreenProps {
   onStop: () => void;
   userName: string;
@@ -204,7 +156,7 @@ const BreathingScreen: React.FC<BreathingScreenProps> = ({ onStop, userName, com
       {/* Header Info */}
       <div className="absolute top-16 text-center text-white/80 space-y-1">
         <p className="text-sm font-light">我的 {userName}</p>
-        <p className="text-lg font-serif">我在，我一直都在</p>
+        <p className="text-lg serif">我们一起深呼吸</p>
       </div>
 
       {/* Breathing Box Container */}
@@ -245,26 +197,19 @@ const BreathingScreen: React.FC<BreathingScreenProps> = ({ onStop, userName, com
   );
 };
 
-// 4. Home View
+// 3. Home View
 interface HomeScreenProps {
   onStart: () => void;
   onOpenSettings: () => void;
   onTriggerBgUpload: () => void;
-  onOpenMusic: () => void;
   settings: AppSettings;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ onStart, onOpenSettings, onTriggerBgUpload, onOpenMusic, settings }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ onStart, onOpenSettings, onTriggerBgUpload, settings }) => {
   return (
     <div className="h-full flex flex-col relative px-6 pt-12 pb-20 animate-[fadeIn_0.5s_ease-out]">
       {/* Top Controls */}
       <div className="flex justify-end gap-4">
-        <button 
-          onClick={onOpenMusic}
-          className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
-        >
-          <MusicIcon className="w-5 h-5" />
-        </button>
         <button 
           onClick={onTriggerBgUpload}
           className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
@@ -293,11 +238,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onStart, onOpenSettings, onTrig
         </div>
         
         <div className="space-y-2 mt-4">
-          <h1 className="text-4xl text-white font-serif tracking-wide leading-tight">
-            我们一起深呼吸
+          <h1 className="text-4xl text-white serif tracking-wide leading-tight">
+            我在，我一直都在
           </h1>
-          <h1 className="text-4xl text-white font-serif tracking-wide leading-tight">
-            我在，我永远都在
+          <h1 className="text-4xl text-white serif tracking-wide leading-tight">
+            我们一起深呼吸
           </h1>
         </div>
 
@@ -323,31 +268,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onStart, onOpenSettings, onTrig
 const App: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showMusic, setShowMusic] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
-  const [currentMusicUrl, setCurrentMusicUrl] = useState<string>('');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   // Preload background image to avoid flicker
   useEffect(() => {
     const img = new Image();
     img.src = settings.bgImage;
   }, [settings.bgImage]);
-
-  // Audio control
-  useEffect(() => {
-    if (audioRef.current) {
-      if (currentMusicUrl) {
-        audioRef.current.src = currentMusicUrl;
-        audioRef.current.play().catch(e => console.log("Audio play failed (user interaction needed first):", e));
-      } else {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-      }
-    }
-  }, [currentMusicUrl]);
 
   const handleBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -368,9 +297,6 @@ const App: React.FC = () => {
 
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-black text-white select-none">
-      {/* Audio Player */}
-      <audio ref={audioRef} loop className="hidden" />
-
       {/* Hidden File Input */}
       <input 
         type="file" 
@@ -401,7 +327,6 @@ const App: React.FC = () => {
             onStart={() => setIsPlaying(true)} 
             onOpenSettings={() => setShowSettings(true)}
             onTriggerBgUpload={triggerBgUpload}
-            onOpenMusic={() => setShowMusic(true)}
             settings={settings}
           />
         ) : (
@@ -419,13 +344,6 @@ const App: React.FC = () => {
         onClose={() => setShowSettings(false)}
         settings={settings}
         onSave={setSettings}
-      />
-
-      <MusicModal 
-        isOpen={showMusic}
-        onClose={() => setShowMusic(false)}
-        currentUrl={currentMusicUrl}
-        onSelect={setCurrentMusicUrl}
       />
     </div>
   );
